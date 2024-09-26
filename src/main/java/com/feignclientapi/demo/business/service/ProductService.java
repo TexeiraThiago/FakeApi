@@ -6,6 +6,7 @@ import com.feignclientapi.demo.infrastructure.entities.ProductEntity;
 import com.feignclientapi.demo.infrastructure.exception.BusinessException;
 import com.feignclientapi.demo.infrastructure.exception.ConflictException;
 import com.feignclientapi.demo.infrastructure.exception.UnprocessableEntityException;
+import com.feignclientapi.demo.infrastructure.message.consumer.FakeApiProducer;
 import com.feignclientapi.demo.infrastructure.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class ProductService {
 
     private final ProductsRepository repository;
     private final ProductMapper mapper;
+    private final FakeApiProducer producer;
 
     public ProductEntity saveOneProduct(ProductEntity productEntity) {
         try {
@@ -35,14 +37,18 @@ public class ProductService {
     public ProductDTO saveOneProductDTO(ProductDTO dto) {
         try {
 
-            ProductEntity productEntity = mapper.toEntity(dto);
             if (isTitleExist(dto.title()).equals(true)) {
                 throw new ConflictException(format("Product %s already exist in database", dto.title()));
             }
-            return mapper.toProductDTO(repository.save(productEntity));
+            ProductEntity productEntity = mapper.toEntity(dto);
+            productEntity = repository.save(productEntity);
+            producer.sendResponse(format("product %s saved successfully", dto.title()));
+            return mapper.toProductDTO(productEntity);
         } catch (BusinessException e) {
+            producer.sendResponse(format("Error during saving product %s in database ", dto.title()));
             throw new BusinessException("Error during save product");
         } catch (ConflictException e) {
+            producer.sendResponse(format("Product %s already exist in database ", dto.title()));
             throw new ConflictException(e.getMessage());
         }
     }
