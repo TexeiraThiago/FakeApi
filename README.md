@@ -4,15 +4,21 @@ FakeApi é uma API REST simples criada para simular endpoints e fornecer dados f
 Ideal para desenvolvedores que precisam de dados mockados em seus projetos.
 
 ## Tecnologias Utilizadas
-- **Java**
+- **Java 17**
 - **Spring Boot**
-- **Swagger**
+- **PostgreSQL**
 - **Docker**
+- **Kafka**
+- **Zookeeper**
+- **Swagger**
 
 ## Funcionalidades Principais
 - CRUD completo para entidades simuladas.
-- Endpoints personalizados para retornar dados mockados.
-- Documentação automática de API com Swagger.
+- Integração com banco de dados PostgreSQL.
+- Comunicação via Kafka para simulação de eventos.
+- Utilização do Docker para facilitar o ambiente de desenvolvimento.
+- Documentação automática da API com Swagger.
+
 
 ## Como Executar o Projeto
 
